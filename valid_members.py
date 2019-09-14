@@ -43,25 +43,11 @@ def obtain_valid_members():
 	format_attendees(mailing_list)
 	format_attendees(event_list)
 
-	# sort mailing list and event list
-	heapSort(mailing_list)
-	heapSort(event_list)
-
 	# Obtain the valid members
-	# LIST TO LOOP SHOULD BE EVENT_LIST CAUSE IT'S SHORTER SO IT'D BE FASTER
 	for mailing_attendee in mailing_list:
-		valid_member_index = binarySearch(event_list, 0, len(event_list) -1, mailing_attendee)
-		if valid_member_index != -1:
-			valid_member_email = event_list[valid_member_index]
-			valid_members.append(valid_member_email)
-			valid.write(valid_member_email + '\n')
-
-	# OTHER WAYS TO DO IT!!!
-	# for mailing_attendee in mailing_list:
-	# 	if mailing_attendee in event_list:
-	# 		valid.write(mailing_attendee+'\n')
-	# 		valid_members.append(mailing_attendee)
-	heapSort(valid_members)
+		if mailing_attendee in event_list:
+			valid.write(mailing_attendee+'\n')
+			valid_members.append(mailing_attendee)
 	return valid_members
 
 if __name__ == '__main__':
