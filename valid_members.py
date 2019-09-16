@@ -1,7 +1,7 @@
 from important_algorithms import heapSort, binarySearch
 import pandas as pd
-import time
 ###  ADD UNEXPECTED CRASHES
+# CHANGE THE LABEL OF EMAIL ADDRESS TO Email_address
 
 # MIGHT ADD NAMES IF NOT, DELETE DF
 def data_extraction(filename, col_name):
@@ -18,13 +18,14 @@ def format_attendees(attendees):
 def obtain_valid_members():
 	# ppl who are in the mailing list and  are obtained
 	mailing_list_file = 'tutors.csv'
-	mailing_col_name = 'Email address'
+	mailing_col_name = 'Email_address'
 	mailing_list = data_extraction(mailing_list_file, mailing_col_name)
 	mailing_list = mailing_list[0]
 
 	# ppl who attended events
 	event_list_file = 'events.csv'
-	event_col_name = 'Email address'
+	event_col_name = 'Email_address'
+	# df for obtain the name
 	event_list, df = data_extraction(event_list_file, event_col_name)
 
 	mailing_list = list(mailing_list)
@@ -46,7 +47,9 @@ def obtain_valid_members():
 	# Obtain the valid members
 	for mailing_attendee in mailing_list:
 		if mailing_attendee in event_list:
-			valid.write(mailing_attendee+'\n')
+			# obtain the name of the email address
+			valid_name = df[df.Email_address == mailing_attendee].iloc[0,1]
+			valid.write(valid_name + ',' + mailing_attendee+'\n')
 			valid_members.append(mailing_attendee)
 	return valid_members
 
