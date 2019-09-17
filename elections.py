@@ -29,7 +29,7 @@ def is_email_valid(email):
 	email_char = email.split('@')
 	
 	if len(email_char) != 2:
-		message = 'Invalid email. Try again. Press any key to continue.\n'
+		message = 'Invalid email. Try again. Press enter to continue.\n'
 		is_email_valid = False
 	
 	# validate the domain
@@ -39,11 +39,11 @@ def is_email_valid(email):
 
 	# validate the email is in the mailing list
 	elif email not in valid_members:
-		message = 'We\'re sorry! You\'re not in the member list.\nPlease let another member vote, and press any key to continue.\n'
+		message = 'We\'re sorry! You\'re not in the member list.\nPlease let another member vote, and press enter to continue.\n'
 		is_email_valid = False
 	# if none of the other conditions are met, the email is valid
 	else:
-		message = 'CONGRATS!!! YOU HAVE VOTED! PRESS ANY KEY TO CONTINUE\n'
+		message = 'CONGRATS!!! YOU HAVE VOTED! PRESS ANY ENTER TO CONTINUE\n'
 	return is_email_valid, message
 
 # returns the position object
@@ -66,11 +66,11 @@ def voting_menu():
 
 	# another menu where they can vote
 	while True:
-		email_inputted = input('Input your ualberta email to make a vote, or type \'Q\' to quit.\n> ')
+		email_inputted = input('Input your ualberta email to make a vote, or type \'Q\' to quit.\n> ').strip()
 		print('\n')
 		if email_inputted.upper() == 'Q':
 			for position in positions_obj:
-				position.show_results()
+				position.show_all_results()
 			break
 		has_voted = email_inputted in voted_members
 		is_valid, message = is_email_valid(email_inputted)
@@ -84,7 +84,7 @@ def voting_menu():
 				print(position)
 				# handle exceptions for option
 				while True:
-					option = input('Choose a candidate by selecting a number\n> ')
+					option = input('Choose a candidate by selecting a number\n> ').strip()
 					print('\n')
 					try:
 						position.make_vote(int(option) - 1)
@@ -108,12 +108,12 @@ def main_menu():
 	# make a vote
 	clear()
 	print('------- WELCOME TO THE ELECTION APP! -------')
-	print("TYPE 1 OR 2 TO CHOOSE.")
-	print("PRESS 'Q' TO QUIT ")
 	functions = [show_progress, voting_menu]
 	
 	option = ''
 	while True:
+		print("TYPE 1 OR 2 TO CHOOSE.")
+		print("PRESS 'Q' TO QUIT ")
 		# show options
 		for i in range(0, len(functions)):
 			print(str(i+1) + '). ' + functions[i].__doc__)

@@ -13,7 +13,7 @@ class Position:
 		candidate_name = self.applicants[applicant_ind]
 		self.candidates[candidate_name] += 1
 	
-	def show_results(self):
+	def show_all_results(self):
 		print(self.position.capitalize() + ':')
 		for applicant, result in self.candidates.items():
 			print(applicant, result)
