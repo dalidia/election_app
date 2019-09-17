@@ -1,6 +1,5 @@
-from important_algorithms import heapSort, binarySearch
 import pandas as pd
-###  ADD UNEXPECTED CRASHES
+###  TODO: ADD UNEXPECTED CRASHES
 # CHANGE THE LABEL OF EMAIL ADDRESS TO Email_address
 
 # MIGHT ADD NAMES IF NOT, DELETE DF
@@ -14,7 +13,7 @@ def format_attendees(attendees):
 	for i in range(0, len(attendees)):
 		attendees[i] = attendees[i].strip().lower() # change it to capitalize for names
 
-# obtains a sorted valid members
+# obtains a list of valid members
 def obtain_valid_members():
 	# ppl who are in the mailing list and  are obtained
 	mailing_list_file = 'tutors.csv'
@@ -31,7 +30,7 @@ def obtain_valid_members():
 	mailing_list = list(mailing_list)
 	event_list = list(event_list)
 
-	# create result file
+	# create valid members file
 	filename = 'valid_members.csv'
 	valid_members = []
 	valid = open(filename, 'w+')
