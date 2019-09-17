@@ -1,4 +1,3 @@
-from important_algorithms import heapSort, binarySearch
 import pandas as pd
 ###  ADD UNEXPECTED CRASHES
 # CHANGE THE LABEL OF EMAIL ADDRESS TO Email_address
@@ -17,7 +16,7 @@ def format_attendees(attendees):
 # obtains a sorted valid members
 def obtain_valid_members():
 	# ppl who are in the mailing list and  are obtained
-	mailing_list_file = 'tutors.csv'
+	mailing_list_file = 'mailing_list.csv'
 	mailing_col_name = 'Email_address'
 	mailing_list = data_extraction(mailing_list_file, mailing_col_name)
 	mailing_list = mailing_list[0]

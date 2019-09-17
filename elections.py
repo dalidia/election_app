@@ -1,5 +1,4 @@
 from valid_members import obtain_valid_members
-from important_algorithms import binarySearch
 from position_class import Position
 import pandas, os
 
@@ -15,7 +14,7 @@ def show_progress(position_obj={}):
 	if not bool(position_obj):
 		print('No votes have been made\n')
 		return
-	# create a file where it shows how election is going
+	# TODO: create a file where it shows how election is going
 	return
 
 # Validate the email inputted
@@ -49,6 +48,7 @@ def is_email_valid(email):
 # returns the position object
 def voting_menu():
 	"""Start the voting process """
+	global conn, cursor
 	clear()
 	# Show the candidates
 	raw_positions = {'president':['Chris', 'Lucky'], 'vp admin':['John', 'Lucky'], 'vp finance':['Cassandra','Lucky']}
@@ -128,6 +128,9 @@ def main_menu():
 			print("Invalid input. Please try again!\n\n")
 
 def main():
+	# global conn, cursor
+	# path = './election.db'
+	# connect_database(path)
 	main_menu()
 
 main()
