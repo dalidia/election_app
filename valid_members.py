@@ -1,7 +1,7 @@
 import pandas as pd
 import sqlite3
 import os
-###  TODO: ADD UNEXPECTED CRASHES
+import sys
 # CHANGE THE LABEL OF EMAIL ADDRESS TO Email_address
 
 def set_up_database():
@@ -36,17 +36,26 @@ def format_attendees(attendees):
 # obtains a list of valid members
 def obtain_valid_members():
 	conn, cursor = set_up_database()
-	# ppl who are in the mailing list and  are obtained
-	mailing_list_file = 'mailing_list.csv'
-	mailing_col_name = 'Email_address'
-	mailing_list = data_extraction(mailing_list_file, mailing_col_name)
-	mailing_list = mailing_list[0]
+	
+	try:
+		# ppl who are in the mailing list and  are obtained
+		mailing_list_file = 'mailing_list.csv'
+		mailing_col_name = 'Email_address'
+		mailing_list = data_extraction(mailing_list_file, mailing_col_name)
+		mailing_list = mailing_list[0]
+	except:
+		print("Problem opening {}".format(mailing_list_file))
+		sys.exit()
 
-	# ppl who attended events
-	event_list_file = 'events.csv'
-	event_col_name = 'Email_address'
-	# df for obtain the name
-	event_list, df = data_extraction(event_list_file, event_col_name)
+	try:
+		# ppl who attended events
+		event_list_file = 'events.csv'
+		event_col_name = 'Email_address'
+		# df for obtain the name
+		event_list, df = data_extraction(event_list_file, event_col_name)
+	except:
+		print("Problem opening {}".format(event_list_file))
+		sys.exit()
 
 	mailing_list = list(mailing_list)
 	event_list = list(event_list)
@@ -63,7 +72,7 @@ def obtain_valid_members():
 			query = "INSERT INTO valid_members_table VALUES ('{}', '{}');".format(valid_name, mailing_attendee)
 			try:
 				cursor.execute(query)
-			except :
+			except:
 				pass
 	conn.commit()
 	return cursor

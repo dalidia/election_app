@@ -2,6 +2,7 @@ from valid_members import obtain_valid_members
 from position_class import Position
 import pandas, os
 import sqlite3
+import sys
 
 # connect database
 def connect_database(path):
@@ -73,7 +74,7 @@ def voting_menu():
 	global conn, cursor
 	clear()
 	# Show the candidates
-	raw_positions = {'president':['Chris', 'Lucky'], 'vp_admin':['John', 'Lucky'], 'vp_finance':['Cassandra','Lucky']}
+	raw_positions = {'president':['Chris', 'Lucky'], 'vp_admin':['Nancy', 'Lucky'], 'vp_finance':['Cassandra','Lucky']}
 
 	# positions
 	positions_obj = []
@@ -143,6 +144,9 @@ def main_menu():
 		# handle option error
 		try:
 			functions[int(option)-1]()
+		except SystemExit:
+			print("Exiting...")
+			sys.exit()
 		except:
 			if option.upper() == 'Q':
 				break
