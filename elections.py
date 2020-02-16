@@ -1,10 +1,27 @@
 from valid_members import obtain_valid_members
 from position_class import Position
 import pandas, os
+import sqlite3
 
-def handle_unexpected_crashes():
-	# USE FIREBASE
-	pass
+# connect database
+def connect_database(path):
+	global conn, cursor
+
+	# if the file already exists, don't create a table
+	try:
+		open(path, 'r')
+		query = ''
+	except OSError:
+		query = "CREATE TABLE election (email TEXT, PRIMARY KEY(email));"
+	finally:
+		conn = sqlite3.connect(path)
+		cursor = conn.cursor()
+		cursor.execute(query)
+		conn.commit()
+
+	cursor.execute('PRAGMA foreign_keys=ON; ')
+	conn.commit()
+	return
 
 def clear():
 	os.system('cls' if os.name=='nt' else 'clear')
@@ -22,11 +39,16 @@ def show_progress(position_obj={}):
 def is_email_valid(email):
 	# TODO: Does it have to be a 'ualberta domain'
 	is_email_valid = True
-	valid_members = obtain_valid_members()
+	cursor_valid_members = obtain_valid_members()
 	
 	# validate right characters
 	email_char = email.split('@')
 	
+	query = "SELECT email from valid_members_table WHERE email = '{}';".format(email)
+	cursor_valid_members.execute(query)
+	valid_members = cursor_valid_members.fetchone()
+	
+
 	if len(email_char) != 2:
 		message = 'Invalid email. Try again. Press enter to continue.\n'
 		is_email_valid = False
@@ -37,7 +59,7 @@ def is_email_valid(email):
 		is_email_valid = False
 
 	# validate the email is in the mailing list
-	elif email not in valid_members:
+	elif valid_members is None:
 		message = 'We\'re sorry! You\'re not in the member list.\nPlease let another member vote, and press enter to continue.\n'
 		is_email_valid = False
 	# if none of the other conditions are met, the email is valid
@@ -51,17 +73,14 @@ def voting_menu():
 	global conn, cursor
 	clear()
 	# Show the candidates
-	raw_positions = {'president':['Chris', 'Lucky'], 'vp admin':['John', 'Lucky'], 'vp finance':['Cassandra','Lucky']}
-	
-	# members who already voted
-	voted_members = [] 
+	raw_positions = {'president':['Chris', 'Lucky'], 'vp_admin':['John', 'Lucky'], 'vp_finance':['Cassandra','Lucky']}
 
 	# positions
 	positions_obj = []
 
 	# Initialize positions
 	for position in raw_positions:
-		obj = Position(position, raw_positions[position])
+		obj = Position(position, raw_positions[position], cursor, conn)
 		positions_obj.append(obj)
 
 	# another menu where they can vote
@@ -69,31 +88,33 @@ def voting_menu():
 		email_inputted = input('Input your ualberta email to make a vote, or type \'Q\' to quit.\n> ').strip()
 		print('\n')
 		if email_inputted.upper() == 'Q':
+			# TODO: DELETE THIS
 			for position in positions_obj:
 				position.show_all_results()
 			break
-		has_voted = email_inputted in voted_members
 		is_valid, message = is_email_valid(email_inputted)
 
-		# validate email inputted and check if it has not already voted
-		if is_valid and not has_voted:
-			# show exec positions
-			voted_members.append(email_inputted)
-			# print options
-			for position in positions_obj:
-				print(position)
-				# handle exceptions for option
-				while True:
-					option = input('Choose a candidate by selecting a number\n> ').strip()
-					print('\n')
-					try:
-						position.make_vote(int(option) - 1)
-						break
-					except:
-						print('Invalid input. Try again.\n')
+		if is_valid:
+			# record members who voted check if they have not already voted
+			try:
+				query = "INSERT INTO election VALUES ('{}');".format(email_inputted)
+				cursor.execute(query)
+				conn.commit()
 
-		elif has_voted:
-			message = "We\'re sorry! You have already voted. Please let another member vote and press any key to continue.\n"
+				# print options
+				for position in positions_obj:
+					print(position)
+					# handle exceptions for option
+					while True:
+						option = input('Choose a candidate by selecting a number\n> ').strip()
+						print('\n')
+						try:
+							position.make_vote(int(option) - 1)
+							break
+						except:
+							print('Invalid input. Try again.\n')
+			except:
+				message = "We\'re sorry! You have already voted. Please let another member vote and press any key to continue.\n"
 		input(message)
 		clear()
 	# if email is valid, ask further details like name. 
@@ -128,9 +149,9 @@ def main_menu():
 			print("Invalid input. Please try again!\n\n")
 
 def main():
-	# global conn, cursor
-	# path = './election.db'
-	# connect_database(path)
+	global conn, cursor
+	path = './election.db'
+	connect_database(path)
 	main_menu()
 
 main()

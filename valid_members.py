@@ -1,6 +1,26 @@
 import pandas as pd
+import sqlite3
+import os
 ###  TODO: ADD UNEXPECTED CRASHES
 # CHANGE THE LABEL OF EMAIL ADDRESS TO Email_address
+
+def set_up_database():
+	database = 'valid_members.db'
+	try:
+		query = ''
+		os.remove(database)
+	except:
+		pass
+	finally:
+		query = ''' CREATE TABLE valid_members_table
+										(valid_members TEXT, email TEXT, 
+										PRIMARY KEY(email));'''
+		# create database
+		conn = sqlite3.connect(database)
+		cursor = conn.cursor()
+		cursor.execute(query)
+		conn.commit()
+	return conn, cursor
 
 # MIGHT ADD NAMES IF NOT, DELETE DF
 def data_extraction(filename, col_name):
@@ -15,6 +35,7 @@ def format_attendees(attendees):
 
 # obtains a list of valid members
 def obtain_valid_members():
+	conn, cursor = set_up_database()
 	# ppl who are in the mailing list and  are obtained
 	mailing_list_file = 'mailing_list.csv'
 	mailing_col_name = 'Email_address'
@@ -30,15 +51,6 @@ def obtain_valid_members():
 	mailing_list = list(mailing_list)
 	event_list = list(event_list)
 
-	# create valid members file
-	filename = 'valid_members.csv'
-	valid_members = []
-	valid = open(filename, 'w+')
-	title = 'Valid Members\n'
-	columns_names = 'Names, Emails\n'
-	valid.write(title)
-	valid.write(columns_names)
-
 	# format the answers
 	format_attendees(mailing_list)
 	format_attendees(event_list)
@@ -48,9 +60,13 @@ def obtain_valid_members():
 		if mailing_attendee in event_list:
 			# obtain the name of the email address
 			valid_name = df[df.Email_address == mailing_attendee].iloc[0,1]
-			valid.write(valid_name + ',' + mailing_attendee+'\n')
-			valid_members.append(mailing_attendee)
-	return valid_members
+			query = "INSERT INTO valid_members_table VALUES ('{}', '{}');".format(valid_name, mailing_attendee)
+			try:
+				cursor.execute(query)
+			except :
+				pass
+	conn.commit()
+	return cursor
 
 if __name__ == '__main__':
 	obtain_valid_members()
